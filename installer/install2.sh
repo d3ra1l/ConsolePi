@@ -10,6 +10,16 @@
 # --                                                                                                                                             -- #
 # --------------------------------------------------------------------------------------------------------------------------------------------------#
 
+# -- System Generate dynamic hostname and hotspot ssid 
+hostnprefix="ConsolePi-"
+
+# Use hostnprefix and the last 4 digits of the network interfaces
+# Pi Zero not equipped with eth0. Use wlan0 for device compatibility. 
+dynhost=$hostnprefix$(/bin/cat /sys/class/net/wlan0/address | /usr/bin/awk -F":" '{print $5$6}')
+
+
+
+
 # -- Find path for any files pre-staged in user home or ConsolePi_stage subdir --
 get_staged_file_path() {
     [[ -z $1 ]] && logit "FATAL Error find_path function passed NUL value" "CRITICAL"
@@ -41,8 +51,8 @@ get_config() {
         echo "net_check_ip=\"8.8.8.8\"                               # used to check internet connectivity" >> "${default_config}"
         echo "local_domain=\"arubalab.net\"                        # used to bypass VPN. evals domain sent via dhcp option if matches this var will not establish vpn" >> "${default_config}"
         echo "wlan_ip=\"10.3.0.1\"                        # IP of ConsolePi when in hotspot mode" >> "${default_config}"
-        echo "wlan_ssid=\"ConsolePi\"                        # SSID used in hotspot mode" >> "${default_config}"
-        echo "wlan_psk=\"ChangeMe!!\"                        # psk used for hotspot SSID" >> "${default_config}"
+        echo "wlan_ssid=\"${dynhost}\"                          # SSID used in hotspot mode" >> "${default_config}"
+        echo "wlan_psk=\"${dynhost}\"                       # psk used for hotspot SSID" >> "${default_config}"
         echo "wlan_country=\"US\"                        # regulatory domain for hotspot SSID" >> "${default_config}"
         echo "cloud=false                                                   # enable ConsolePi clustering / cloud config sync" >> "${default_config}"
         echo 'cloud_svc="gdrive"                                            # Future - only Google Drive / Google Sheets supported currently - must be "gdrive"' >> "${default_config}"
@@ -341,6 +351,7 @@ chg_password() {
 set_hostname() {
     process="Change Hostname"
     hostn=$(cat /etc/hostname)
+
     if [[ "${hostn}" == "raspberrypi" ]]; then
         header
         valid_response=false
@@ -365,6 +376,9 @@ set_hostname() {
                 done
                 [[ "$response" =~ ^(yes|y)$ ]] && ok_do_hostname=true || ok_do_hostname=false
             done
+        else
+            $newhost = $dynhost
+        fi
 
             # change hostname in /etc/hosts & /etc/hostname
             sudo sed -i "s/$hostn/$newhost/g" /etc/hosts
