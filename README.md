@@ -127,7 +127,7 @@ Triggered by ConsolePi Acting as DHCP server (generally hotspot):
 
 ###  Important Notes:
 
- - Uses the hostname as a unique identifier.  If all of your ConsolePis have the same hostname they will each overwrite the data.  The Hostname is also used to identify the device in the menu. During setup a system generated hostname is created if one is not suppiled. It's derived from the *ConsolePi-* prefix and the last 4 characters of the WLAN0's MAC address.
+ - The Gdrive function Uses the hostname as a unique identifier.  If all of your ConsolePis have the same hostname they will each overwrite the data.  The Hostname is also used to identify the device in the menu. During setup a system generated hostname is created if one is not suppiled. It's derived from the *ConsolePi-* prefix and the last 4 characters of the WLAN0's MAC address.
 
    **Make Hostnames unique for each ConsolePi**
 
